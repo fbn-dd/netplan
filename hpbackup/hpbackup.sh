@@ -8,8 +8,8 @@ REPO_DIR="/opt/config/trunk/switches"
 
 cd ${REPO_DIR}
 
-scp root@192.168.0.12:/cfg/startup-config switch-hp-2810-48g-startup-config.cfg
-scp root@192.168.0.12:/cfg/running-config switch-hp-2810-48g-running-config.cfg
+scp root@xxxxxxx:/cfg/startup-config switch-hp-2810-48g-startup-config.cfg
+scp root@xxxxxxx:/cfg/running-config switch-hp-2810-48g-running-config.cfg
 
 scp root@192.168.0.13:/cfg/startup-config switch-hp-2810-24g-startup-config.cfg
 scp root@192.168.0.13:/cfg/running-config switch-hp-2810-24g-running-config.cfg
