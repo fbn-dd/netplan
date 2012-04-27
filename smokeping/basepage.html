@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Cache-Control" content="no-cache" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Refresh" content="<##step##>" />
+<title>Netplan v2 - SmokePing Latenz-Seite für <##title##></title>
+<link rel='stylesheet' href='/netplan/css/gserverl.css' type='text/css'></link>
+<script src="/smokeping/javascript/prototype/prototype.js" type="text/javascript"></script>      
+<script src="/smokeping/javascript/scriptaculous/scriptaculous.js?load=builder,effects,dragdrop" type="text/javascript"></script>
+<script src="/smokeping/javascript/cropper/cropper.js" type="text/javascript"></script>
+<script src="/smokeping/javascript/smokeping-zoom.js" type="text/javascript"></script>
+</head>
+
+<body onLoad="document.getElementsByName('filter')[0].focus()">
+<div class="normalbox">
+  [
+<a href="/netplan/">Startseite</a> |
+<a href="/netplan/netzplan.php">Netzplan</a> | <a href="/netplan/map/index.php">AP-Karte</a> | <a href="/netplan/earth/index.php" title="Geodaten für Google Earth als *.kml-Datei herunterladen">Google Earth</a> | <a href="/netplan/stats/">Routerstatistik</a> | <a href="/netplan/stats/summary.php">Router&uuml;bersicht</a> | <a href="/netplan/ip.php">IP-Suche</a> | <a href="/trafficmap/index.html">Traffic-Map</a> | <b>Smokeping</b> | <a href="/nagios/index.php">Nagios</a> | <a href="/wiki/">zur&uuml;ck zum Intranet</a>  ]
+</div>
+<div class='normalbox'>
+bearbeiten
+  [
+<a href="/netplan/edit/index.php">Netzplan</a> | <a href="/netplan/map/edit.php">AP-Karte</a> | <a href="/netplan/wpa/index.php">WPA-Passphrasen</a> | <a href="/netplan/lager/">Lager</a> | 
+<a href="/netplan/lanmgmt/">LANCOM-Management</a>  ]
+</div>
+<div class="normalbox" style="float:left; width:200px;">
+  <p><a href="smokeping.cgi">Startseite</a></p>
+  <h2>SmokePing-Ziele:</h2>
+  <##menu##>
+  <p><##smokelogo##></p>
+  <p><##rrdlogo##></p>
+</div>
+<div class="normalbox" style="margin-left:220px;">
+  <h1><##title##></h1>
+  <p><##remark##></p>
+  <##overview##>
+  <##body##>
+</div>
+<div class="fixfloat">&nbsp;</div>
+<div class="normalbox">Diese Installation von <##smokeping##> der Autoren <##author##> wird betrieben von <a href="mailto:<##contact##>"><##owner##></a>.</div>
+</body>
+</html>

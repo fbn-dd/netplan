@@ -1,0 +1,200 @@
+#!/usr/bin/perl
+
+# Nagios Check Script for teamspeak server
+# written by Torben Hansemann 2006
+
+#Parameter:
+# -H            host
+# -h            help
+# -s            server-port (default: 8767)
+# -t            telnet port (default: 51234)
+# -w            warning usercount
+# -c            Critical usercount
+# -V            version
+# -v            verbose
+
+use strict;
+use IO::Socket;
+use Getopt::Long;
+use Time::HiRes qw(gettimeofday);
+
+use lib "/usr/lib/nagios/plugins/" ;
+use utils qw($TIMEOUT %ERRORS &print_revision &support);
+use vars qw($PROGNAME $opt_v $opt_V $opt_h $opt_H $opt_w $opt_c $opt_t $opt_s $opt_l @servers $duration);
+
+$PROGNAME="check_teamspeak";
+
+my $DEFAULT_USERCNT_WARN 			= 32;
+my $DEFAULT_USERCNT_CRIT 			= 64;
+my $DEFAULT_TELNET_PORT       = 51234;
+my $DEFAULT_TS_SERVER_PORT    = 8767;
+
+
+Getopt::Long::Configure('bundling');
+GetOptions
+        ("V"   => \$opt_V, "version"       => \$opt_V,
+         "h"   => \$opt_h, "help"          => \$opt_h,
+         "l"   => \$opt_l, "list"          => \$opt_l,
+         "w=f" => \$opt_w, "warning=f"     => \$opt_w,   
+         "c=f" => \$opt_c, "critical=f"    => \$opt_c,   
+         "H=s" => \$opt_H, "hostname=s"    => \$opt_H,
+         "t=f" => \$opt_t, "telnetport=f"  => \$opt_t,
+         "s=f" => \$opt_s, "server=f"      => \$opt_s);
+
+
+if ($opt_V) {
+  print_revision($PROGNAME,'$Revision: 0.1.0 $ ');
+  exit $ERRORS{'OK'};
+}
+
+if ($opt_h) {
+  print_help();
+  exit $ERRORS{'OK'};
+}
+
+unless ($opt_H) {
+  print "No target host specified\n";
+  print_usage();
+  exit $ERRORS{'UNKNOWN'};
+}
+
+($opt_w) || ($opt_w = $DEFAULT_USERCNT_WARN);
+my $uwarn = $1 if ($opt_w =~ /([0-9.]+)/);
+
+($opt_c) || ($opt_c = $DEFAULT_USERCNT_CRIT);
+my $ucrit = $1 if ($opt_c =~ /([0-9.]+)/);
+
+unless ($uwarn < $ucrit){
+        print "Critical usercpunt must not be smaller than warning time\n";
+        print_usage();
+        exit $ERRORS{'UNKNOWN'};
+}
+
+unless ($opt_t) {
+	$opt_t = $DEFAULT_TELNET_PORT;
+}
+
+
+
+unless ($opt_s) {
+	$opt_s = $DEFAULT_TS_SERVER_PORT;	
+}
+
+if ($opt_l) {
+	&list_servers();
+  my $ret = "UNKNOWN: Active servers : ";
+  foreach my $server (@servers) {
+  	$ret .= $server." "; 
+  }
+  print  $ret."\n";
+  exit $ERRORS{'UNKNOWN'};
+}
+
+
+# Just in case of problems, let's not hang Nagios
+$SIG{'ALRM'} = sub {
+        print ("ERROR: No response from teamspeakserver (alarm)\n");
+        exit $ERRORS{"UNKNOWN"};
+};
+alarm($TIMEOUT);
+
+
+sub list_servers {
+	my $starttime = gettimeofday;
+  my $sock = IO::Socket::INET->new(qq($opt_H:$opt_t));
+  unless ($sock) {
+    print ("ERROR: Unable to open Socket on $opt_H:$opt_t\n");
+    exit $ERRORS{"UNKNOWN"};
+  }
+  print $sock qq(sl\nquit\n);
+  while(<$sock>){
+	  chomp;
+	  if (/^(\d+)/) {
+		  push @servers,$1;
+	  }
+  }
+  my $endtime = gettimeofday;
+  $duration += $endtime - $starttime;
+  return @servers;
+}
+
+get_data();
+
+sub get_data {
+	my $starttime = gettimeofday;
+	my $currentusers;
+  my $bytesup;
+  my $bytesdown;
+  my $uptime;
+	my $sock = IO::Socket::INET->new(qq($opt_H:$opt_t));
+	unless ($sock) {
+    print ("ERROR: Unable to open Socket on $opt_H:$opt_t\n");
+    exit $ERRORS{"UNKNOWN"};
+  }
+	print $sock qq(si $opt_s\nquit\n);
+	while(<$sock>){
+		if(/server_currentusers=(\d+)/){
+			($currentusers) = $1;
+		}
+		if(/server_bytessend=(\d+)/){
+      ($bytesup) = $1;
+    }
+    if(/server_bytesreceived=(\d+)/){
+     	($bytesdown) = $1;
+    }
+    if(/server_uptime=(\d+)/){
+     	($uptime) = $1;
+    }
+	}
+	my $endtime = gettimeofday;
+	$duration += $endtime - $starttime;
+	$duration = sprintf "%2f", $duration;
+	my $perfdata = "users=".$currentusers.";bytessend=".$bytesup.";bytesreceived=".$bytesdown.";uptime=".$uptime;
+	#print $duration;
+	if ($currentusers >= $ucrit) {
+	  print "CRITICAL: current users: $currentusers on server: $opt_s ; queryduration: ".$duration." | ".$perfdata."\n";
+	  exit $ERRORS{"CRITICAL"};
+	} elsif ($currentusers >= $uwarn && $currentusers < $ucrit) {
+	  print "WARNING: current users: $currentusers on server: $opt_s ; queryduration: ".$duration." | ".$perfdata."\n";
+	  exit $ERRORS{"WARNING"};
+	} else {
+		print "OK: current users: $currentusers on server: $opt_s ; queryduration: ".$duration." | ".$perfdata."\n";
+		exit $ERRORS{"OK"};
+	}
+}
+
+
+
+sub print_usage () {
+        print "Usage: $PROGNAME -H <host> -s [<server udpport>] -t [<telnet port>] [-w <warn>] [-c <crit>] [-v verbose]\n";
+}
+
+sub print_help () {
+        print_revision($PROGNAME,'$Revision: 0.1.0 $');
+        print "Torben Hansemann 2006 (th\@thux.de)\n";
+        print "\n";
+        print_usage();
+        print "
+
+Checks the Teamspeak on host H, Server(udp port) s, where
+
+ -V, --version
+   Print version information
+ -h, --help
+   Print detailed help screen
+ -l, --list
+   list running TS Servers on -H <Host>
+ -H, --hostname=ADDRESS
+   Host name argument
+ -s, --server=INTEGER
+   UDP Port number of TS Server (default: 8767)
+ -t, --telnetport=INTEGER
+   Port number of telnet port (default: 51234)
+ -w, --warning=FLOAT
+   Usercount warning (default: 32)
+ -c, --critical=FLOAT
+   Usercount critical (default: 64)
+
+";
+support();
+}

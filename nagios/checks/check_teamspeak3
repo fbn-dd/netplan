@@ -1,0 +1,244 @@
+#!/usr/bin/perl
+
+# Nagios Check Script for teamspeak 3 server
+# written by Torben Hansemann 2006
+# Updated with login by Andreas Zimmermann 2010 schick_was_an@hotmail.com
+
+#Parameter:
+# -H            host
+# -h            help
+# -t            telnet port (default: 10011)
+# -u            (Optional) A user name
+# -p            (Optional) A password
+# -w            warning usercount percent
+# -c            Critical usercount percent
+# -V            version
+# -v            verbose
+
+use strict;
+use IO::Socket;
+use Getopt::Long;
+use Time::HiRes qw(gettimeofday);
+
+use lib "/usr/lib/nagios/plugins/" ;
+use utils qw($TIMEOUT %ERRORS &print_revision &support);
+use vars qw($PROGNAME $opt_v $opt_V $opt_h $opt_H $opt_w $opt_c $opt_t $opt_l $opt_u $opt_p @servers $duration %EscapePattern);
+
+$PROGNAME="check_teamspeak3";
+
+my $DEFAULT_USERCNT_WARN        = 70;
+my $DEFAULT_USERCNT_CRIT        = 90;
+my $DEFAULT_TELNET_PORT         = 10011;
+
+
+Getopt::Long::Configure('bundling');
+GetOptions
+        ("V"   => \$opt_V, "version"       => \$opt_V,
+         "h"   => \$opt_h, "help"          => \$opt_h,
+         "l"   => \$opt_l, "list"          => \$opt_l,
+         "w=f" => \$opt_w, "warning=f"     => \$opt_w,   
+         "c=f" => \$opt_c, "critical=f"    => \$opt_c,   
+         "u=s" => \$opt_u, "user=s"    	   => \$opt_u,   
+         "p=s" => \$opt_p, "password=s"    => \$opt_p,   
+         "H=s" => \$opt_H, "hostname=s"    => \$opt_H,
+         "t=f" => \$opt_t, "telnetport=f"  => \$opt_t);
+
+if ($opt_V) {
+  print_revision($PROGNAME,'$Revision: 0.1.0 $ ');
+  exit $ERRORS{'OK'};
+}
+
+if ($opt_h) {
+  print_help();
+  exit $ERRORS{'OK'};
+}
+
+unless ($opt_H) {
+  print "No target host specified\n";
+  print_usage();
+  exit $ERRORS{'UNKNOWN'};
+}
+
+my $host = $1 if ($opt_H =~ /([-.A-Za-z0-9]+)/);
+($host) || print_usage("Invalid host: $opt_H\n");
+
+($opt_w) || ($opt_w = $DEFAULT_USERCNT_WARN);
+my $uwarn = $1 if ($opt_w =~ /([0-9]{1,2}|100)+/);
+($uwarn) || print_usage("Invalid warning threshold: $opt_w\n");
+
+($opt_c) || ($opt_c = $DEFAULT_USERCNT_CRIT);
+my $ucrit = $1 if ($opt_c =~ /([0-9]{1,2}|100)+/);
+($ucrit) || print_usage("Invalid critical threshold: $opt_c\n");
+
+unless ($uwarn <= $ucrit){
+    print "Critical usercpunt must not be smaller than warning usercpunt\n";
+    print_usage();
+    exit $ERRORS{'UNKNOWN'};
+}
+
+unless ($opt_t) {
+    $opt_t = $DEFAULT_TELNET_PORT;
+}
+
+if ($opt_u) {
+	unless ($opt_p) {
+		print "No password specified\n";
+		print_usage();
+		exit $ERRORS{'UNKNOWN'};
+	}
+}
+
+if ($opt_l) {
+  &list_servers();
+  my $ret = "UNKNOWN: Active servers : ";
+  foreach my $server (@servers) {
+    $ret .= $server." "; 
+  }
+  print  $ret."\n";
+  exit $ERRORS{'UNKNOWN'};
+}
+
+
+# Just in case of problems, let's not hang Nagios
+$SIG{'ALRM'} = sub {
+    print ("ERROR: No response from teamspeakserver (alarm)\n");
+    exit $ERRORS{"UNKNOWN"};
+};
+alarm($TIMEOUT);
+
+
+sub list_servers {
+  my $starttime = gettimeofday;
+  my $sock = IO::Socket::INET->new(qq($opt_H:$opt_t));
+  unless ($sock) {
+    print ("ERROR: Unable to open Socket on $opt_H:$opt_t\n");
+    exit $ERRORS{"UNKNOWN"};
+  }
+	if ($opt_u) {
+		print $sock "login ".EscapeLogin($opt_u)." ".EscapeLogin($opt_p)."\n";
+	}
+  print $sock qq(serverlist\nquit\n);
+  while(<$sock>) {
+    chomp;
+    foreach (split(/\|/)) {
+      if (/virtualserver_port=(\d+)/) {
+        push @servers,$1;
+      }
+    }
+  }
+  my $endtime = gettimeofday;
+  $duration += $endtime - $starttime;
+  return @servers;
+}
+
+sub EscapeLogin{
+	my $str=shift;
+	$str=~s/^\s*(.*)\s*$/$1/g;
+	$str=~s/\\/\\\\/g;
+	$str=~s/\//\\\//g;
+	$str=~s/ /\\s/g;
+	$str=~s/\|/\\p/g;
+	$str=~s/;/\\;/g;
+	return $str;
+}
+
+get_data();
+
+sub get_data {
+    my $starttime = gettimeofday;
+    my $currentusers = 0;
+    my $maxusers = 0;
+    my $userpercent = 0;
+    my $bytesup = 0;
+    my $bytesdown = 0;
+    my $uptime = 0;
+    my $sock = IO::Socket::INET->new(qq($opt_H:$opt_t));
+    unless ($sock) {
+        print ("ERROR: Unable to open Socket on $opt_H:$opt_t\n");
+        exit $ERRORS{"UNKNOWN"};
+    }
+
+	if ($opt_u) {
+		print $sock "login ".EscapeLogin($opt_u)." ".EscapeLogin($opt_p)."\n";
+	}
+    print $sock qq(hostinfo\nquit\n);
+    while(<$sock>){
+        foreach (split(/\|/)) {
+            if(/virtualservers_total_clients_online=(\d+)/){
+                ($currentusers) = $1;
+            }
+            if(/virtualservers_total_maxclients=(\d+)/){
+                ($maxusers) = $1;
+            }
+            if(/connection_bytes_sent_total=(\d+)/){
+                ($bytesup) = $1;
+            }
+            if(/connection_bytes_received_total=(\d+)/){
+                ($bytesdown) = $1;
+            }
+            if(/instance_uptime=(\d+)/){
+                ($uptime) = $1;
+            }
+        }
+    }
+    my $endtime = gettimeofday;
+    $duration += $endtime - $starttime;
+    $duration = sprintf "%2f", $duration;
+    my $perfdata = "users=".$currentusers.";maxusers=".$maxusers.";bytessend=".$bytesup.";bytesreceived=".$bytesdown.";uptime=".$uptime;
+    if ($maxusers > 0) {
+        $userpercent = ($currentusers * 100.0) / $maxusers;
+    } else {
+        print ("ERROR: Unable to get maxclients from $opt_t\n");
+        exit $ERRORS{"UNKNOWN"};
+    }
+    #print $duration;
+    if ($userpercent >= $ucrit) {
+        print "CRITICAL: current users: $currentusers on server: $opt_t ; queryduration: ".$duration." | ".$perfdata."\n";
+        exit $ERRORS{"CRITICAL"};
+    } elsif ($userpercent >= $uwarn) {
+        print "WARNING: current users: $currentusers on server: $opt_t ; queryduration: ".$duration." | ".$perfdata."\n";
+        exit $ERRORS{"WARNING"};
+    } else {
+        print "OK: current users: $currentusers on server: $opt_t ; queryduration: ".$duration." | ".$perfdata."\n";
+        exit $ERRORS{"OK"};
+    }
+}
+
+
+
+sub print_usage () {
+    print "Usage: $PROGNAME [-V] -H <host> [-t <telnet port>] [-u <user> -p <password>] [-w <warn>] [-c <crit>] [-l]\n";
+}
+
+sub print_help () {
+    print_revision($PROGNAME,'$Revision: 0.1.1 $');
+    print "Elbandi (elso.andras\@gmail.com) based on nagios check_teamspeak from Torben Hansemann 2006 (th\@thux.de)\n";
+    print "nd (schick_was_an\@hotmail.com) based on nagios check_teamspeak3 from Elbandi\n";
+    print "\n";
+    print_usage();
+    print "
+
+Checks the Teamspeak on host H, Server(udp port) s, where
+
+ -V, --version
+   Print version information
+ -h, --help
+   Print detailed help screen
+ -l, --list
+   list running TS Servers on -H <Host>
+ -H, --hostname=ADDRESS
+   Host name argument
+ -t, --telnetport=INTEGER
+   Port number of telnet port (default: 10011)
+ -u, --user=STRING
+   A user name
+ -p, --password=STRING
+   The users password
+ -w, --warning=FLOAT
+   Usercount warning percent (default: 70)
+ -c, --critical=FLOAT
+   Usercount critical percent (default: 90)
+
+";
+    support();
+}

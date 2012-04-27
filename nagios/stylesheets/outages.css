@@ -1,0 +1,13 @@
+.outages { font-size: 10pt; }
+
+.itemTotalsTitle { font-size: 8pt; text-align: center; }
+
+.dataTitle { text-align: center; font-weight: bold; font-size: 12pt; }
+table.data { font-size: 10pt; background-color: white; border: 1px solid black; padding: 2px; }
+th.data    { font-size: 10pt; background-color: white; border: 1px solid black; }
+.dataOdd   { font-size: 10pt; background-color: #dedede; }
+.dataEven  { font-size: 10pt; }
+
+.hostUP          { font-size: 10pt; background-color: #33FF00; font-weight: bold; }
+.hostDOWN        { font-size: 10pt; background-color: #F83838; font-weight: bold; }
+.hostUNREACHABLE { font-size: 10pt; background-color: #F83838; font-weight: bold; }

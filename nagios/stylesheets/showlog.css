@@ -1,0 +1,13 @@
+.showlog { }
+
+.navBoxTitle { font-size: 10pt; font-weight: bold; }
+.navBoxItem  { font-size: 8pt; font-weight: bold; color: red; }
+.navBoxDate  { font-size: 8pt; font-weight: bold; }
+.navBoxFile  { font-size: 8pt; font-weight: bold; text-align: center; }
+
+.optBox     { font-size: 10pt; font-weight: bold; }
+.optBoxItem { font-size: 8pt; font-weight: bold; color: red; }
+
+.logEntries { font-size: 8pt; }
+
+.dateTimeBreak { font-size: 10pt; font-weight: bold; color: red; }

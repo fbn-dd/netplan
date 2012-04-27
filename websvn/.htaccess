@@ -1,0 +1,22 @@
+AuthName "FBN-DD Mitgliederbereich"
+AuthType Basic
+
+AuthMySQL on
+AuthMySQL_Host     dbserver
+AuthMySQL_User     www
+AuthMySQL_Password password
+AuthMySQL_DB       users
+AuthMySQL_Password_Table   Mitglieder
+AuthMySQL_Username_Field   Username
+AuthMySQL_Password_Field   Password
+AuthMySQL_Group_Table      Gruppen
+AuthMySQL_Group_Field      Gruppe
+AuthMySQL_Group_User_Field Username
+AuthMySQL_Authoritative    on
+AuthMySQL_Encryption_Types Plaintext Crypt_DES Crypt_MD5 Crypt PHP_MD5 SHA1Sum MySQL
+AuthMySQL_Empty_Passwords  off
+
+AuthUserFile /dev/null
+AuthBasicAuthoritative off
+
+require group admin

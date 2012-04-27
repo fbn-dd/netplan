@@ -1,0 +1,11 @@
+.cmd { font-size: 10pt; }
+
+.cmdType { font-size: 10pt; font-weight: bold; text-align: center; color: red; }
+
+.commandDescription { font-size: 8pt; text-align: center; background-color: white; border: 1px solid black; padding: 5px; }
+.descriptionTitle   { font-size: 10pt; text-align: center; font-weight: bold; }
+
+.optBox             { font-size: 8pt; padding: 5px; background-color: white; border: 1px solid black; }
+.optBoxTitle        { font-size: 10pt; text-align: center; font-weight: bold; }
+.optBoxItem         { font-size: 10pt; }
+.optBoxRequiredItem { font-size: 10pt; color: red; font-weight:bold; }

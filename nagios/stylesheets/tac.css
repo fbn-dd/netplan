@@ -1,0 +1,83 @@
+.tac { }
+
+a { color: black; }
+
+.title     { font-weight: bold; font-size: large; background-color: black; color: white; }
+.titleItem { font-weight: bold; font-size: 8pt;   background-color: black; color: white; }
+.infoBoxBadProcStatus { font-weight: bold; font-size: 8pt; background-color: white; color: red; }
+
+.healthTitle { font-weight: bold; background-color: white; border: 1px solid black; }
+.healthBox   { font-weight: bold; background-color: white; border: 1px solid black; }
+.healthItem  { font-weight: bold; background-color: white; }
+.healthBar   { font-weight: bold; background-color: white; }
+
+.perfTitle   { font-weight: bold; background-color: white; text-decoration: none; border: 1px solid black; }
+.perfTitle a { border:none; }
+.perfBox     { font-weight: bold; background-color: white; border: 1px solid black; text-decoration: none; }
+.perfItem    { font-weight: bold; text-decoration: none; }
+.perfValue   { text-decoration: none; }
+
+.featureTitle    { font-weight: bold; background-color: white; border: 1px solid black; }
+.featureHeader   { text-align: center; font-weight: bold; background-color: white; border: 1px solid black; }
+.featureEnabled  { text-align: center; font-weight: bold; background-color: #ccffcc; color: #8f8f8f; }
+.featureDisabled { text-align: center; font-weight: bold; background-color: #ffcccc; color: #b3b3b3; }
+
+.featureEnabledFlapDetection             { text-align: center; font-weight: bold; font-size: 10pt; background-color: #ccffcc; color: #8f8f8f; }
+.featureDisabledFlapDetection            { text-align: center; font-weight: bold; font-size: 10pt; background-color: #ffcccc; color: #b3b3b3; }
+.featureItemEnabledServiceFlapDetection  { font-size: 8pt; background-color: #ccffcc; }
+.featureItemDisabledServiceFlapDetection { font-size: 8pt; background-color: #ff0000; }
+.featureItemEnabledHostFlapDetection     { font-size: 8pt; background-color: #ccffcc; }
+.featureItemDisabledHostFlapDetection    { font-size: 8pt; background-color: #ff0000; }
+.featureItemServicesNotFlapping          { font-size: 8pt; background-color: #ccffcc; }
+.featureItemServicesFlapping             { font-size: 8pt; background-color: #ff0000; }
+.featureItemHostsNotFlapping             { font-size: 8pt; background-color: #ccffcc; }
+.featureItemHostsFlapping                { font-size: 8pt; background-color: #ff0000; }
+
+.featureEnabledNotifications             { text-align: center; font-weight: bold; font-size: 10pt; background-color: #ccffcc; color: #8f8f8f; }
+.featureDisabledNotifications            { text-align: center; font-weight: bold; font-size: 10pt; background-color: #ffcccc; color: #b3b3b3; }
+.featureItemEnabledServiceNotifications  { font-size: 8pt; background-color: #ccffcc; }
+.featureItemDisabledServiceNotifications { font-size: 8pt; background-color: #ff0000; }
+.featureItemEnabledHostNotifications     { font-size: 8pt; background-color: #ccffcc; }
+.featureItemDisabledHostNotifications    { font-size: 8pt; background-color: #ff0000; }
+
+.featureEnabledHandlers             { text-align: center; font-weight: bold; font-size: 10pt; background-color: #ccffcc; color: #8f8f8f; }
+.featureDisabledHandlers            { text-align: center; font-weight: bold; font-size: 10pt; background-color: #ffcccc; color: #b3b3b3; }
+.featureItemEnabledServiceHandlers  { font-size: 8pt; background-color: #ccffcc; }
+.featureItemDisabledServiceHandlers { font-size: 8pt; background-color: #ff0000; }
+.featureItemEnabledHostHandlers     { font-size: 8pt; background-color: #ccffcc; }
+.featureItemDisabledHostHandlers    { font-size: 8pt; background-color: #ff0000; }
+
+.featureEnabledActiveChecks             { text-align: center; font-weight: bold; font-size: 10pt; background-color: #ccffcc; color: #8f8f8f; }
+.featureDisabledActiveChecks            { text-align: center; font-weight: bold; font-size: 10pt; background-color: #ffcccc; color: #b3b3b3; }
+.featureItemEnabledActiveServiceChecks  { font-size: 8pt; background-color: #ccffcc; }
+.featureItemDisabledActiveServiceChecks { font-size: 8pt; background-color: #ff0000; }
+.featureItemEnabledActiveHostChecks     { font-size: 8pt; background-color: #ccffcc; }
+.featureItemDisabledActiveHostChecks    { font-size: 8pt; background-color: #ff0000; }
+
+.featureEnabledPassiveChecks             { text-align: center; font-weight: bold; font-size: 10pt; background-color: #ccffcc; color: #8f8f8f; }
+.featureDisabledPassiveChecks            { text-align: center; font-weight: bold; font-size: 10pt; background-color: #ffcccc; color: #b3b3b3; }
+.featureItemEnabledPassiveServiceChecks  { font-size: 8pt; background-color: #ccffcc; }
+.featureItemDisabledPassiveServiceChecks { font-size: 8pt; background-color: #ff0000; }
+.featureItemEnabledPassiveHostChecks     { font-size: 8pt; background-color: #ccffcc; }
+.featureItemDisabledPassiveHostChecks    { font-size: 8pt; background-color: #ff0000; }
+
+.outageTitle  { font-weight: bold; font-size: 10pt; background-color: white; border: 1px solid black; }
+.outageHeader { text-align: center; font-weight: bold; font-size: 10pt; background-color: white; text-decoration: none; border: 1px solid black; }
+.outageHeader a { border:none; }
+
+.outageImportantProblem   { font-size: 8pt; background-color: #ff0000; }
+.outageUnimportantProblem { font-size: 8pt; background-color: #ffcccc; }
+
+.hostTitle  { font-weight: bold; font-size: 10pt; background-color: white; border: 1px solid black; }
+.hostHeader { text-align: center; font-weight: bold; font-size: 10pt; background-color: white; text-decoration: none; border: 1px solid black; }
+.hostHeader a { border:none; }
+
+.hostImportantProblem   { font-size: 8pt; background-color: #ff0000; }
+.hostUnimportantProblem { font-size: 8pt; background-color: #ffcccc; }
+
+.serviceTitle  { font-weight: bold; font-size: 10pt; background-color: white; border: 1px solid black; }
+.serviceHeader { text-align: center; font-weight: bold; font-size: 10pt; background-color: white; text-decoration: none; border: 1px solid black; }
+.serviceHeader a { border:none; }
+
+.serviceImportantProblem   { font-size: 8pt;  background-color: #ff0000; }
+.serviceUnimportantProblem { font-size: 8pt;  background-color: #ffcccc; }

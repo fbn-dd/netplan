@@ -1,0 +1,8 @@
+# Verbote vor Erlaubnissen abarbeiten
+order deny,allow
+# verbiete alle
+deny from all
+# erlaube dhcp-server
+allow from 192.168.0.
+# keine Authentifizierung (geerbt) noetig
+satisfy any

@@ -1,0 +1,32 @@
+# Options FollowSymLinks or SymLinksIfOwnerMatch is off which implies that RewriteRule directive is forbidden
+Options +FollowSymLinks
+
+# URL-Rewriting
+RewriteEngine On
+
+# Basispfad
+RewriteBase /netplan/stats/
+
+# /ap/<name>        -> ./index.php?ap=<name>
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-l
+RewriteRule ^ap/(.*)$ index.php?ap=$1 [L,QSA,NC]
+
+# /standort/<name>  -> ./index.php?standort=<name>
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-l
+RewriteRule ^standort/(.*)$ index.php?standort=$1 [L,QSA,NC]
+
+# /sektion/<name>   -> ./index.php?sektion=<name>
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-l
+RewriteRule ^sektion/(.*)$ index.php?sektion=$1 [L,QSA,NC]
+
+# /<name>   -> ./index.php?any=<name>
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-l
+RewriteRule ^(.*)$ index.php?any=$1 [L,QSA,NC]

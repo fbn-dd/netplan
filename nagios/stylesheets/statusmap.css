@@ -1,0 +1,10 @@
+.statusmap { }
+
+.optBox { font-family: arial narrow,serif;  font-size: 10pt;  font-weight: bold; }
+.optBoxItem { font-family: arial,serif;  font-size: 8pt;  font-weight: bold;  color: red; }
+
+.imageInfo { font-family: arial,serif;  font-size: 8pt;  font-weight: bold;  text-align: center; }
+
+.zoomTitle { font-family: arial,serif;  font-size: 12pt;  font-weight: bold; }
+
+.popupText { font-family: arial,serif;  font-size: 8pt;  font-weight: bold; }

@@ -1,0 +1,247 @@
+*** General ***
+
+################################################
+# DON'T TOUCH UNLESS YOU KNOW WHAT YOU'RE DOING
+# BETWEEN THESE MARKS!
+################################################
+sendmail = /usr/sbin/sendmail
+imgcache = /var/www/smokeping
+imgurl   = ../smokeping
+datadir  = /opt/smokeping/var
+piddir   = /var/run/smokeping
+smokemail = /etc/smokeping/smokemail
+tmail    = /etc/smokeping/tmail
+################################################
+# END OF DON'T TOUCH SECTION
+################################################
+
+
+# Please edit this to suit your installation
+owner    = FBN-DD AG Technik
+contact  = technik@lists.example.org
+cgiurl   = https://www.example.org/cgi-bin/smokeping.cgi
+mailhost = smtp.example.org
+# specify this to get syslog logging
+syslogfacility = local0
+# each probe is now run in its own process
+# disable this to revert to the old behaviour
+# concurrentprobes = no
+
+*** Alerts ***
+to = technik@lists.example.org
+from = smokealert@example.org
+
++bigloss
+type = loss
+# in percent
+pattern = ==0%,==0%,==0%,==0%,>0%,>0%,>0%
+comment = suddenly there is packet loss
+
++someloss
+type = loss
+# in percent
+pattern = >0%,*12*,>0%,*12*,>0%
+comment = loss 3 times  in a row
+
++startloss
+type = loss
+# in percent
+pattern = ==S,>0%,>0%,>0%
+comment = loss at startup
+
++rttdetect
+type = rtt
+# in milli seconds
+pattern = <10,<10,<10,<10,<10,<100,>100,>100,>100
+comment = routing messed up again?
+
+*** Database ***
+
+step     = 300
+pings    = 20
+
+# consfn mrhb steps total
+
+AVERAGE  0.5   1  1008
+AVERAGE  0.5  12  4320
+    MIN  0.5  12  4320
+    MAX  0.5  12  4320
+AVERAGE  0.5 144   720
+    MAX  0.5 144   720
+    MIN  0.5 144   720
+
+*** Presentation ***
+
+template = /opt/netplan/trunk/smokeping/basepage.html
+charset = utf-8
+
++ charts
+
+menu = Diagrammme
+title = die interessantesten Ger&auml;te
+
+++ stddev
+sorter = StdDev(entries=>4)
+title = gr&ouml;&szlig;te Standardabweichung
+menu = Standardabweichung
+format = Standardabweichung %f
+
+++ max
+sorter = Max(entries=>5)
+title = gr&ouml;&szlig;ter maximaler Ping
+menu = nach Max
+format = maximaler Ping %f Sekunden
+
+++ loss
+sorter = Loss(entries=>5)
+title = gr&ouml;&szlig;te Paketverluste
+menu = Paketverluste
+format = Paketverlust %f
+
+++ median
+sorter = Median(entries=>5)
+title = gr&ouml;&szlig;ter mittlerer Ping
+menu = nach Median
+format = mittlerer Ping %f Sekunden
+
++ overview 
+
+width = 600
+height = 50
+range = 10h
+
++ detail
+
+width = 600
+height = 200
+unison_tolerance = 2
+
+"die letzten 3 Stunden"    3h
+"die letzten 30 Stunden"   30h
+"die letzten 10 Tage"    10d
+"die letzten 400 Tage"   400d
+
+#+ hierarchies
+#++ owner
+#title = Host Owner
+#++ location
+#title = Location
+
++ multihost
+
+colors = 0000ff 00ff00 ff0000 800000 ffff00 
+
+*** Probes ***
+
++ FPing
+
+binary = /usr/bin/fping
+
+# http://oss.oetiker.ch/smokeping/probe/RemoteFPing.en.html
+# Probe-Instanz zum Vererben von Einstellungen auf untergeordnete Probe-Instanzen
+# /var/lib/smokeping/.ssh/config enthält Angabe, welcher SSH private key standardmäßig genutzt wird
++RemoteFPing
+binary = /usr/bin/ssh
+rbinary = /usr/bin/fping-interface
+rhost = server.example.org
+ruser = smokeping
+
+# sourceaddress is fake for interface#n of server
+# see server:/usr/bin/fping-interface for replacements
+++RemoteFPingLobaPPP0
+sourceaddress = 1.1.1.0
+
+++RemoteFPingLobaPPP1
+sourceaddress = 1.1.1.1
+
+++RemoteFPingLobaPPP2
+sourceaddress = 1.1.1.2
+
+++RemoteFPingLobaWAN3
+sourceaddress = 1.1.1.3
+
+#++RemoteFPingLobaPPP4
+#sourceaddress = 1.1.1.4
+
+#++RemoteFPingMondSDSL
+#binary = /usr/bin/ssh
+#rbinary = /usr/sbin/fping
+#rhost = mond.example.org
+#ruser = smokeping
+#sourceaddress = 195.227.105.178
+
+*** Targets ***
+
+probe = FPing
+
+## You have to edit and uncomment all what you want below this.
+# Please, refer to smokeping_config man page for more info
+
+menu = Top
+title = Netzwerk-Latenz-Zeichner
+remark = <p>Willkommen auf der SmokePing-Website des FBN-DD. Hier erf&auml;hrst du mehr &uuml;ber die Latenz in unserem Netzwerk.<br /> \
+         Im Men&uuml; auf der linken Seite findest du die Accesspoints und Server nach Verantwortungsbereichen und Standorten sortiert.</p> \
+         <p><a href="http://de.wikipedia.org/wiki/Ping_(Datenübertragung)" title="Wikipedia-Artikel aufrufen">Ping</a> ist ein Diagnose-Werkzeug, \
+         mit dem überprüft werden kann, ob ein bestimmter Host in einem IP-Netzwerk erreichbar ist. \
+         Die Zeitspanne zwischen dem Aussenden eines Paketes zu diesem Host und dem Empfangen eines daraufhin unmittelbar zurückgeschickten \
+         Antwortpaketes nennt man Paketumlaufzeit, meist Round trip time oder RTT genannt.</p> \
+         <p>Oft wird von Ping gesprochen, aber technisch korrekt wäre RTT und so zeigt auch SmokePing eigentlich die Paketumlaufzeit an.</p>
+
+### internet connectivity ###
+
++ internet
+menu = Internet
+title = Internet
+remark = Latenz ins Internet &uuml;ber die verschiedenen Leitungen<br /> \
+         zur <a href="/netplan/stats/internet.php">Trafficstatistik der Internetzug&auml;nge</a>
+
+# nur Datenaufzeichnung LoBa ppp2 Google.de
+++ server_ppp2_google
+probe = RemoteFPingLobaPPP2
+menu = Google VDSL25 T-Com (ppp2)
+title = Google VDSL25 T-Com (ppp2)
+host = 74.125.39.106
+hide = yes
+
+# nur Datenaufzeichnung LoBa wan3 Google.de
+++ server_wan3_google
+probe = RemoteFPingLobaWAN3
+menu = Google VDSL50 T-Com (wan3)
+title = Google VDSL50 T-Com (wan3)
+host = 74.125.39.106
+hide = yes
+
+# nur Datenanzeige LoBa Google.de
+++ google
+menu = www.google.de
+title = www.google.de
+host = /internet/server_ppp2_google /internet/server_wan3_google
+remark = Latenz zu Google &uuml;ber die verschiedenen Leitungen<br /> \
+         zur <a href="/netplan/stats/internet.php">Trafficstatistik der Internetzug&auml;nge</a>
+
+# nur Datenaufzeichnung LoBa ppp2 T-Online.de
+++ server_ppp2_t-online
+probe = RemoteFPingLobaPPP2
+menu = T-Online VDSL25 T-Com (ppp2)
+title = T-Online VDSL25 T-Com (ppp2)
+host = 62.153.159.92
+hide = yes
+
+# nur Datenaufzeichnung LoBa wan3 T-Online.de
+++ server_wan3_t-online
+probe = RemoteFPingLobaWAN3
+menu = T-Online VDSL50 T-Com (wan3)
+title = T-Online VDSL50 T-Com (wan3)
+host = 62.153.159.92
+hide = yes
+
+# nur Datenanzeige LoBa T-Online.de
+++ t-online
+menu = www.t-online.de
+title = www.t-online.de
+host = /internet/server_ppp2_t-online /internet/server_wan3_t-online
+remark = Latenz zu T-Online &uuml;ber die verschiedenen Leitungen<br /> \
+         zur <a href="/netplan/stats/internet.php">Trafficstatistik der Internetzug&auml;nge</a>
+
+### end internet connectivity ###
+

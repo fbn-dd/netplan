@@ -1,0 +1,40 @@
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+MAILTO=root
+NETPLAN=/opt/netplan/trunk
+
+# Nagios
+* * * * * root test -x $NETPLAN/nagios/nagios.sh && $NETPLAN/nagios/nagios.sh >/dev/null 2>&1
+
+# Smokeping
+* * * * * root test -x $NETPLAN/smokeping/smokeping.sh && $NETPLAN/smokeping/smokeping.sh >/dev/null 2>&1
+
+# SNMP Poller
+* * * * * root test -f /usr/local/bin/snmppoller && /usr/local/bin/snmppoller >/tmp/snmppoller.log 2>&1
+
+# Weathermap
+*/5 * * * * root test -f $NETPLAN/trafficmap/trafficmap.sh && $NETPLAN/trafficmap/trafficmap.sh >/dev/null 2>&1
+
+# HP-Switch config backup
+49 4 * * * root test -f $NETPLAN/hpbackup/hpbackup.sh && $NETPLAN/hpbackup/hpbackup.sh >/tmp/hpbackup.log 2>&1
+
+# Lancom Config Backup
+49 4 * * * root test -f $NETPLAN/lanbackup/lanbackup.pl && $NETPLAN/lanbackup/lanbackup.pl >/tmp/lanbackup.log 2>&1
+
+# Mikrotik Config Backup
+49 5 * * * root test -f $NETPLAN/rbbackup/rbbackup.pl && $NETPLAN/rbbackup/rbbackup.pl >/tmp/rbbackup.log 2>&1
+
+
+# RADIUS
+# Radius Nas Table up-to-date
+*/5 * * * * root test -f $NETPLAN/radius/nastable.php && php -f $NETPLAN/radius/nastable.php >/dev/null 2>&1
+
+# radcheck_mac update
+*/5 * * * * root test -f $NETPLAN/radius/mactable.php && php -f $NETPLAN/radius/mactable.php >/dev/null 2>&1
+
+# radcheck_user update
+*/5 * * * * root test -f $NETPLAN/radius/usertable.php && php -f $NETPLAN/radius/usertable.php >/dev/null 2>&1
+
+# radreply update
+*/5 * * * * root test -f $NETPLAN/wpa/sync.php && php -f $NETPLAN/wpa/sync.php >/dev/null 2>&1
+

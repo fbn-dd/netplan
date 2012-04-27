@@ -1,0 +1,8 @@
+neusshbackup.pl ssh mit user/password-Login mit Tool sshpass aus gleichnamigen Paket
+5. enhancement: log zum diff in mail? - mit svn ggf. vorige revision ermitteln -> link zu websvn
+
+Ansätze für MikroTik-Backup:
+http://wiki.mikrotik.com/wiki/Using_SSH_for_system_backup
+
+ssh backup@10.10.17.2 export file=mikrotik-$geraet
+scp backup@10.10.17.2:mikrotik-$geraet.rsc mikrotik-$geraet.rsc

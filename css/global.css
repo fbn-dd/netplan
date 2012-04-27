@@ -1,0 +1,81 @@
+body	{
+	color: #000000;
+	background-color: #f1eee9;
+	margin: 0;
+	padding: 0;
+}
+
+.normal {
+	font-family: bitstream vera sans, luxi sans, verdana, geneva, arial, helvetica, sans-serif;
+	font-size: 13px;
+	color: #000000;
+}
+
+.normalbox	{
+	font-family: bitstream vera sans, luxi sans, verdana, geneva, arial, helvetica, sans-serif;
+	font-size: 13px;
+	color: #000000;
+	border: 1px solid #440000;
+	margin: 3px;
+	padding: 5px;
+	background-color: #ffffff;
+}
+
+.h1	{
+	text-align: center;
+	font-family: bitstream vera sans, luxi sans, verdana, geneva, arial, helvetica, sans-serif;
+	font-size: 22px;
+	font-weight: bold;
+	color: #880000;
+}
+
+.titlebox       {
+	border: 1px solid #440000;
+	margin: 0px;
+	padding: 0px;
+	background-color: #fefaf1;
+}
+
+a:link	{
+	color: #003300;
+}
+
+a:visited	{
+	color: #726461;
+}
+
+a:hover	{
+	color: #841212;
+	background-color: #fff0c0;
+}
+
+a:active	{
+	color: #ff0000;
+}
+
+img {
+	border:none;
+}
+
+.odd {
+	background-color:#dedede;
+}
+
+.even {}
+
+em {
+	font-weight: bold;
+}
+
+.fixfloat {
+  display: block;
+  float: none;
+  clear: both;
+  margin: 0;
+  padding: 0;
+  border: none;
+  width: 1px;
+  height: 1px;
+  font-size: 0;
+  line-height: 0;
+}

@@ -1,0 +1,3 @@
+run this from the root of this project
+
+php /usr/share/php/DB/DataObject/createTables.php ini/netplan2.ini
