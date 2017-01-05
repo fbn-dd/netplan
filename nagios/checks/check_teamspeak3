@@ -153,8 +153,8 @@ sub get_data {
     my $bytesup = 0;
     my $bytesdown = 0;
     my $uptime = 0;
-    my $uwarnpercent = 0;
-    my $ucritpercent = 0;
+    my $uwarn_user = 0;
+    my $ucrit_user = 0;
     my $sock = IO::Socket::INET->new(qq($opt_H:$opt_t));
     unless ($sock) {
         print ("ERROR: Unable to open Socket on $opt_H:$opt_t\n");
@@ -172,8 +172,8 @@ sub get_data {
             }
             if(/virtualservers_total_maxclients=(\d+)/){
                 ($maxusers) = $1;
-                ($uwarnpercent) = ceil($maxusers/100 * $uwarn);
-                ($ucritpercent) = ceil($maxusers/100 * $ucrit);
+                ($uwarn_user) = ceil($maxusers/100 * $uwarn);
+                ($ucrit_user) = ceil($maxusers/100 * $ucrit);
             }
             if(/connection_bytes_sent_total=(\d+)/){
                 ($bytesup) = $1;
@@ -189,7 +189,7 @@ sub get_data {
     my $endtime = gettimeofday;
     $duration += $endtime - $starttime;
     $duration = sprintf "%2f", $duration;
-    my $perfdata = "users=".$currentusers.";".$uwarnpercent.";".$ucritpercent.";0;".$maxusers." maxusers=".$maxusers." bytessend=".$bytesup."B bytesreceived=".$bytesdown."B uptime=".$uptime."s";
+    my $perfdata = "users=".$currentusers.";".$uwarn_user.";".$ucrit_user.";0;".$maxusers." maxusers=".$maxusers." bytessend=".$bytesup."B bytesreceived=".$bytesdown."B uptime=".$uptime."s";
     if ($maxusers > 0) {
         $userpercent = ($currentusers * 100.0) / $maxusers;
     } else {
