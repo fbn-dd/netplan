@@ -39,7 +39,7 @@ GetOptions
          "l"   => \$opt_l, "list"          => \$opt_l,
          "w=f" => \$opt_w, "warning=f"     => \$opt_w,   
          "c=f" => \$opt_c, "critical=f"    => \$opt_c,   
-         "u=s" => \$opt_u, "user=s"       => \$opt_u,   
+         "u=s" => \$opt_u, "user=s"        => \$opt_u,   
          "p=s" => \$opt_p, "password=s"    => \$opt_p,   
          "H=s" => \$opt_H, "hostname=s"    => \$opt_H,
          "t=f" => \$opt_t, "telnetport=f"  => \$opt_t);
@@ -82,11 +82,11 @@ unless ($opt_t) {
 }
 
 if ($opt_u) {
-unless ($opt_p) {
-print "No password specified\n";
-print_usage();
-exit $ERRORS{'UNKNOWN'};
-}
+    unless ($opt_p) {
+        print "No password specified\n";
+        print_usage();
+        exit $ERRORS{'UNKNOWN'};
+    }
 }
 
 if ($opt_l) {
@@ -115,9 +115,9 @@ sub list_servers {
     print ("ERROR: Unable to open Socket on $opt_H:$opt_t\n");
     exit $ERRORS{"UNKNOWN"};
   }
-if ($opt_u) {
-print $sock "login ".EscapeLogin($opt_u)." ".EscapeLogin($opt_p)."\n";
-}
+    if ($opt_u) {
+        print $sock "login ".EscapeLogin($opt_u)." ".EscapeLogin($opt_p)."\n";
+    }
   print $sock qq(serverlist\nquit\n);
   while(<$sock>) {
     chomp;
@@ -133,14 +133,14 @@ print $sock "login ".EscapeLogin($opt_u)." ".EscapeLogin($opt_p)."\n";
 }
 
 sub EscapeLogin{
-my $str=shift;
-$str=~s/^\s*(.*)\s*$/$1/g;
-$str=~s/\\/\\\\/g;
-$str=~s/\//\\\//g;
-$str=~s/ /\\s/g;
-$str=~s/\|/\\p/g;
-$str=~s/;/\\;/g;
-return $str;
+    my $str=shift;
+    $str=~s/^\s*(.*)\s*$/$1/g;
+    $str=~s/\\/\\\\/g;
+    $str=~s/\//\\\//g;
+    $str=~s/ /\\s/g;
+    $str=~s/\|/\\p/g;
+    $str=~s/;/\\;/g;
+    return $str;
 }
 
 get_data();
@@ -161,9 +161,9 @@ sub get_data {
         exit $ERRORS{"UNKNOWN"};
     }
 
-if ($opt_u) {
-print $sock "login ".EscapeLogin($opt_u)." ".EscapeLogin($opt_p)."\n";
-}
+    if ($opt_u) {
+        print $sock "login ".EscapeLogin($opt_u)." ".EscapeLogin($opt_p)."\n";
+    }
     print $sock qq(hostinfo\nquit\n);
     while(<$sock>){
         foreach (split(/\|/)) {
