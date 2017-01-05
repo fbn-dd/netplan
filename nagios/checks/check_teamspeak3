@@ -16,6 +16,7 @@
 # -v            verbose
 
 use strict;
+use POSIX;
 use IO::Socket;
 use Getopt::Long;
 use Time::HiRes qw(gettimeofday);
@@ -38,7 +39,7 @@ GetOptions
          "l"   => \$opt_l, "list"          => \$opt_l,
          "w=f" => \$opt_w, "warning=f"     => \$opt_w,   
          "c=f" => \$opt_c, "critical=f"    => \$opt_c,   
-         "u=s" => \$opt_u, "user=s"    	   => \$opt_u,   
+         "u=s" => \$opt_u, "user=s"       => \$opt_u,   
          "p=s" => \$opt_p, "password=s"    => \$opt_p,   
          "H=s" => \$opt_H, "hostname=s"    => \$opt_H,
          "t=f" => \$opt_t, "telnetport=f"  => \$opt_t);
@@ -81,11 +82,11 @@ unless ($opt_t) {
 }
 
 if ($opt_u) {
-	unless ($opt_p) {
-		print "No password specified\n";
-		print_usage();
-		exit $ERRORS{'UNKNOWN'};
-	}
+unless ($opt_p) {
+print "No password specified\n";
+print_usage();
+exit $ERRORS{'UNKNOWN'};
+}
 }
 
 if ($opt_l) {
@@ -114,9 +115,9 @@ sub list_servers {
     print ("ERROR: Unable to open Socket on $opt_H:$opt_t\n");
     exit $ERRORS{"UNKNOWN"};
   }
-	if ($opt_u) {
-		print $sock "login ".EscapeLogin($opt_u)." ".EscapeLogin($opt_p)."\n";
-	}
+if ($opt_u) {
+print $sock "login ".EscapeLogin($opt_u)." ".EscapeLogin($opt_p)."\n";
+}
   print $sock qq(serverlist\nquit\n);
   while(<$sock>) {
     chomp;
@@ -132,14 +133,14 @@ sub list_servers {
 }
 
 sub EscapeLogin{
-	my $str=shift;
-	$str=~s/^\s*(.*)\s*$/$1/g;
-	$str=~s/\\/\\\\/g;
-	$str=~s/\//\\\//g;
-	$str=~s/ /\\s/g;
-	$str=~s/\|/\\p/g;
-	$str=~s/;/\\;/g;
-	return $str;
+my $str=shift;
+$str=~s/^\s*(.*)\s*$/$1/g;
+$str=~s/\\/\\\\/g;
+$str=~s/\//\\\//g;
+$str=~s/ /\\s/g;
+$str=~s/\|/\\p/g;
+$str=~s/;/\\;/g;
+return $str;
 }
 
 get_data();
@@ -152,15 +153,17 @@ sub get_data {
     my $bytesup = 0;
     my $bytesdown = 0;
     my $uptime = 0;
+    my $uwarnpercent = 0;
+    my $ucritpercent = 0;
     my $sock = IO::Socket::INET->new(qq($opt_H:$opt_t));
     unless ($sock) {
         print ("ERROR: Unable to open Socket on $opt_H:$opt_t\n");
         exit $ERRORS{"UNKNOWN"};
     }
 
-	if ($opt_u) {
-		print $sock "login ".EscapeLogin($opt_u)." ".EscapeLogin($opt_p)."\n";
-	}
+if ($opt_u) {
+print $sock "login ".EscapeLogin($opt_u)." ".EscapeLogin($opt_p)."\n";
+}
     print $sock qq(hostinfo\nquit\n);
     while(<$sock>){
         foreach (split(/\|/)) {
@@ -169,6 +172,8 @@ sub get_data {
             }
             if(/virtualservers_total_maxclients=(\d+)/){
                 ($maxusers) = $1;
+                ($uwarnpercent) = ceil($maxusers/100 * $uwarn);
+                ($ucritpercent) = ceil($maxusers/100 * $ucrit);
             }
             if(/connection_bytes_sent_total=(\d+)/){
                 ($bytesup) = $1;
@@ -184,7 +189,7 @@ sub get_data {
     my $endtime = gettimeofday;
     $duration += $endtime - $starttime;
     $duration = sprintf "%2f", $duration;
-    my $perfdata = "users=".$currentusers.";maxusers=".$maxusers.";bytessend=".$bytesup.";bytesreceived=".$bytesdown.";uptime=".$uptime;
+    my $perfdata = "users=".$currentusers.";".$uwarnpercent.";".$ucritpercent.";0;".$maxusers." maxusers=".$maxusers." bytessend=".$bytesup."B bytesreceived=".$bytesdown."B uptime=".$uptime."s";
     if ($maxusers > 0) {
         $userpercent = ($currentusers * 100.0) / $maxusers;
     } else {
@@ -199,7 +204,7 @@ sub get_data {
         print "WARNING: current users: $currentusers on server: $opt_t ; queryduration: ".$duration." | ".$perfdata."\n";
         exit $ERRORS{"WARNING"};
     } else {
-        print "OK: current users: $currentusers on server: $opt_t ; queryduration: ".$duration." | ".$perfdata."\n";
+        print "OK: current users: $currentusers on server: $opt_t ; queryduration: ".$duration." |".$perfdata."\n";
         exit $ERRORS{"OK"};
     }
 }
@@ -242,3 +247,4 @@ Checks the Teamspeak on host H, Server(udp port) s, where
 ";
     support();
 }
+
